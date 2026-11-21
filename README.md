@@ -5,6 +5,12 @@ Final Project of Parallel Programming Algorithm, NYU Graduate Course
 2. run single thread Faiss on local machine
 3. impl checker
 4. draft own algorithm & impl
+    1. train
+        1. initilization
+        2. Lloydss
+    2. add
+    3. integrate with main logic
+5. test
     1. test single thread on local machine till pass
     2. test multi thread on remote machine
 5. result visualization

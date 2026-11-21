@@ -17,11 +17,13 @@ IVFImpl make_faiss_impl(const std::vector<float>& database,
     const std::vector<float>& queries, std::vector<std::int64_t>& neighbors,
     std::size_t dimension, std::size_t nlist, std::size_t nprobe,
     std::size_t k);
-IVFImpl make_customized_impl();
+IVFImpl make_customized_impl(const std::vector<float>& database,
+    std::size_t dimension, std::size_t nlist);
 
 namespace customized {
 
-void train_kmeans();
+std::vector<float> sample_training_rows(const std::vector<float>& database,
+    std::size_t dimension, std::size_t nlist);
 void build_ivf_index();
 void search_ivf();
 

@@ -144,14 +144,8 @@ int main(int argc, char** argv) {
     try {
         // Parse the params and select the search implementation.
         const auto params = parse_params(argc, argv);
-        if (params.implementation == "customized") {
-            const auto impl = make_customized_impl();
-            impl.train();
-            impl.add();
-            impl.search();
-            return 0;
-        }
-        if (params.implementation != "faiss") {
+        const bool use_customized = params.implementation == "customized";
+        if (!use_customized && params.implementation != "faiss") {
             throw std::runtime_error("Unknown implementation: " +
                 std::string(params.implementation));
         }
@@ -180,9 +174,17 @@ int main(int argc, char** argv) {
                 "Too few db rows or reference IDs for top-10");
         }
 
-        // Load the db and query vectors.
+        // Load the database for either implementation.
         const auto db =
             read_matrix<float>(directory / "database.f32", db_rows, dimension);
+        if (use_customized) {
+            const auto impl = make_customized_impl(db, dimension, params.nlist);
+            impl.train();
+            impl.add();
+            impl.search();
+            return 0;
+        }
+
         const auto queries = read_matrix<float>(
             directory / "queries.f32", query_rows, dimension);
 
