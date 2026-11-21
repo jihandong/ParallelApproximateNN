@@ -1,3 +1,5 @@
+#include "internal.h"
+
 #include <faiss/utils/utils.h>
 
 #include <algorithm>
@@ -7,7 +9,6 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
-#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -17,10 +18,6 @@
 #include <string_view>
 #include <utility>
 #include <vector>
-
-std::function<void(const float*, std::int64_t*)> make_faiss_search(
-    const std::vector<float>& db, std::size_t dimension, std::size_t nlist,
-    std::size_t nprobe, std::size_t query_rows, std::size_t k);
 
 namespace {
 
@@ -137,14 +134,17 @@ double check_results(const fs::path& reference_path,
 
 int main(int argc, char** argv) {
   if (argc < 2) {
-    std::cerr << "Usage: ann <dataset directory> [--impl faiss] [--nlist 256]"
-                 " [--nprobe 8]\n";
+    std::cerr << "Usage: ann <dataset directory> [--impl faiss|customized]"
+                 " [--nlist 256] [--nprobe 8]\n";
     return 2;
   }
 
   try {
     // Parse the params and select the search implementation.
     const auto params = parse_params(argc, argv);
+    if (params.implementation == "customized") {
+      return run_customized();
+    }
     if (params.implementation != "faiss") {
       throw std::runtime_error("Unknown implementation: " +
                                std::string(params.implementation));

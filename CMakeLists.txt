@@ -10,7 +10,7 @@ find_package(BLAS REQUIRED)
 find_path(OPENBLAS_INCLUDE_DIR NAMES openblas_config.h
     PATH_SUFFIXES openblas openblas-pthread openblas-openmp REQUIRED)
 
-add_executable(ann main.cc faiss.cc)
+add_executable(ann main.cc faiss.cc customized.cc kmeans.cc ivf.cc)
 target_compile_features(ann PRIVATE cxx_std_20)
 target_include_directories(ann PRIVATE "${OPENBLAS_INCLUDE_DIR}")
 target_link_libraries(ann PRIVATE faiss OpenMP::OpenMP_CXX BLAS::BLAS)

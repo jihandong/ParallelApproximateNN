@@ -1,3 +1,5 @@
+#include "internal.h"
+
 #include <cblas.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
