@@ -1,8 +1,9 @@
 #include "internal.h"
 
-int run_customized() {
-  customized::train_kmeans();
-  customized::build_ivf_index();
-  customized::search_ivf();
-  return 0;
+IVFImpl make_customized_impl() {
+    return {
+        .train = customized::train_kmeans,
+        .add = customized::build_ivf_index,
+        .search = customized::search_ivf
+    };
 }

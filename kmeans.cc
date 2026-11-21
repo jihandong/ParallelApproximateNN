@@ -4,8 +4,6 @@
 
 namespace customized {
 
-void train_kmeans() {
-  std::cout << "K-means training is not implemented.\n";
-}
+void train_kmeans() { std::cout << "K-means training is not implemented.\n"; }
 
 }  // namespace customized
