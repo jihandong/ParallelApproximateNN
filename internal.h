@@ -18,7 +18,9 @@ IVFImpl make_faiss_impl(const std::vector<float>& database,
     std::size_t dimension, std::size_t nlist, std::size_t nprobe,
     std::size_t k);
 IVFImpl make_customized_impl(const std::vector<float>& database,
-    std::size_t dimension, std::size_t nlist);
+    const std::vector<float>& queries, std::vector<std::int64_t>& neighbors,
+    std::size_t dimension, std::size_t nlist, std::size_t nprobe,
+    std::size_t k);
 
 namespace customized {
 

@@ -12,6 +12,7 @@ find_path(OPENBLAS_INCLUDE_DIR NAMES openblas_config.h
 
 add_executable(ann main.cc faiss.cc customized.cc kmeans.cc ivf.cc)
 target_compile_features(ann PRIVATE cxx_std_20)
+target_compile_definitions(ann PRIVATE DEBUG_MODE=$<CONFIG:Debug>)
 target_include_directories(ann PRIVATE "${OPENBLAS_INCLUDE_DIR}")
 target_link_libraries(ann PRIVATE faiss OpenMP::OpenMP_CXX BLAS::BLAS)
 

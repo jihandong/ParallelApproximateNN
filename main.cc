@@ -174,23 +174,17 @@ int main(int argc, char** argv) {
                 "Too few db rows or reference IDs for top-10");
         }
 
-        // Load the database for either implementation.
+        // Load the database and query vectors.
         const auto db =
             read_matrix<float>(directory / "database.f32", db_rows, dimension);
-        if (use_customized) {
-            const auto impl = make_customized_impl(db, dimension, params.nlist);
-            impl.train();
-            impl.add();
-            impl.search();
-            return 0;
-        }
-
         const auto queries = read_matrix<float>(
             directory / "queries.f32", query_rows, dimension);
 
         // Bind the in-memory data and allocate buffers before timing the phases.
         std::vector<std::int64_t> neighbors(query_rows * top_k);
-        const auto impl = make_faiss_impl(db, queries, neighbors, dimension,
+        const auto make_impl =
+            use_customized ? make_customized_impl : make_faiss_impl;
+        const auto impl = make_impl(db, queries, neighbors, dimension,
             params.nlist, params.nprobe, top_k);
         using Clock = std::chrono::steady_clock;
         using Seconds = std::chrono::duration<double>;
