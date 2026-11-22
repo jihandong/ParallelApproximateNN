@@ -6,12 +6,18 @@ Final Project of Parallel Programming Algorithm, NYU Graduate Course
 3. impl checker
 4. draft own algorithm & impl
     1. train
-        1. initilization
-        2. Lloydss
-    2. add
+        1. Pick samples
+        2. ⚡Pick initial centroid
+        3. ⚡Lloydss
+    2. ⚡add
+    3. ⚡query
     3. integrate with main logic
 5. test
     1. test single thread on local machine till pass
     2. test multi thread on remote machine
 5. result visualization
 6. (optional) optimization
+
+## TODO
+- potential optimization: use unordered_set/bitset instead of vector selected mask
+- potential optimization: manual L2 distance or math func

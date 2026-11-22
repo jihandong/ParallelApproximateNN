@@ -16,12 +16,16 @@ IVFImpl make_customized_impl(const std::vector<float>& database,
     return {
         .train = [&database, dimension, nlist] {
             const auto sample =
-                customized::sample_training_rows(database, dimension, nlist);
+                customized::sample_rows(database, dimension, nlist);
+            const auto centroids =
+                customized::init_centroids(sample, dimension, nlist);
 #if DEBUG_MODE
             std::clog << "Sampled " << sample.size() / dimension
-                << " rows for K-means training.\n";
+                << " rows for K-means training.\n"
+                << "Initialized " << centroids.size() / dimension
+                << " centroids.\n";
 #endif
-            // TODO: Initialize and refine the centers from the sample for add.
+            // TODO: Run Lloyd iterations and keep the centroids for add.
         },
         // TODO: Build the inverted lists from the database and trained centers.
         .add = customized::build_ivf_index,

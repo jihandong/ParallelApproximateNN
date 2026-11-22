@@ -24,7 +24,9 @@ IVFImpl make_customized_impl(const std::vector<float>& database,
 
 namespace customized {
 
-std::vector<float> sample_training_rows(const std::vector<float>& database,
+std::vector<float> sample_rows(const std::vector<float>& database,
+    std::size_t dimension, std::size_t nlist);
+std::vector<float> init_centroids(const std::vector<float>& sample,
     std::size_t dimension, std::size_t nlist);
 void build_ivf_index();
 void search_ivf();
