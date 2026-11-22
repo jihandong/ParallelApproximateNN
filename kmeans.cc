@@ -170,7 +170,15 @@ void lloyd(const std::vector<float>& sample, std::size_t dimension,
     double prev_loss = 0.0;
     int small_improvs = 0; // counters
 
+#if DEBUG_MODE
+    using Clock = std::chrono::steady_clock;
+    Clock::duration assign_time{}, update_time{};
+#endif
+
     for (std::size_t iteration = 0; iteration < max_iterations; ++iteration) {
+#if DEBUG_MODE
+        const auto assign_start = Clock::now();
+#endif
         // Assign rows against the same centroids and accumulate per-block stats.
         parlay::blocked_for(0, nb_samples, block_size,
             [&](std::size_t block, std::size_t begin, std::size_t end) {
@@ -208,6 +216,10 @@ void lloyd(const std::vector<float>& sample, std::size_t dimension,
                 block_losses[block] = loss;
             });
 
+#if DEBUG_MODE
+        assign_time += Clock::now() - assign_start;
+        const auto update_start = Clock::now();
+#endif
         // Merge in-block centroid losses into block0.
         // XXX: SIMD or parallelism
         parlay::parallel_for(0, nlist, [&](std::size_t j) {
@@ -226,6 +238,9 @@ void lloyd(const std::vector<float>& sample, std::size_t dimension,
             for (std::size_t k = 0; k < dimension; ++k)
                 centroid[k] = static_cast<float>(sum[k] / count);
         });
+#if DEBUG_MODE
+        update_time += Clock::now() - update_start;
+#endif
 
         const auto loss =
             std::accumulate(block_losses.begin(), block_losses.end(), 0.0);
@@ -237,6 +252,12 @@ void lloyd(const std::vector<float>& sample, std::size_t dimension,
         }
         prev_loss = loss;
     }
+
+#if DEBUG_MODE
+    using Milliseconds = std::chrono::duration<double, std::milli>;
+    std::fprintf(stderr, "Lloyd profiling (ms): assign=%.6f, update=%.6f\n",
+        Milliseconds(assign_time).count(), Milliseconds(update_time).count());
+#endif
 }
 
 }  // namespace customized
