@@ -69,6 +69,7 @@ void search_ivf(const std::vector<float>& database,
 #if DEBUG_MODE
     using Clock = std::chrono::steady_clock;
     std::vector<Clock::duration> probe_times(nb_queries), scan_times(nb_queries);
+    // XXX: Shall we use atomic add instead of final sum?
 #endif
 
     parlay::parallel_for(0, nb_queries, [&](std::size_t i) {
