@@ -24,13 +24,27 @@ IVFImpl make_customized_impl(const std::vector<float>& database,
 
 namespace customized {
 
+// XXX: Benchmark SIMD or a library implementation for squared L2.
+static inline double squared_l2(const float* lhs, const float* rhs,
+    std::size_t dimension) {
+    double distance = 0.0;
+    for (std::size_t i = 0; i < dimension; ++i) {
+        const double diff = static_cast<double>(lhs[i]) - rhs[i];
+        distance += diff * diff;
+    }
+    return distance;
+}
+
 std::vector<float> sample_rows(const std::vector<float>& database,
     std::size_t dimension, std::size_t nlist);
 std::vector<float> init_centroids(const std::vector<float>& sample,
     std::size_t dimension, std::size_t nlist);
 void lloyd(const std::vector<float>& sample, std::size_t dimension,
     std::size_t nlist, std::vector<float>& centroids);
-void build_ivf_index();
+
+std::vector<std::vector<std::size_t>> build_ivf(
+    const std::vector<float>& database, const std::vector<float>& centroids,
+    std::size_t dimension, std::size_t nlist);
 void search_ivf();
 
 }  // namespace customized

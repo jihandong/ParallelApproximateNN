@@ -18,6 +18,12 @@ target_include_directories(ann PRIVATE "${OPENBLAS_INCLUDE_DIR}")
 target_link_libraries(ann PRIVATE faiss OpenMP::OpenMP_CXX BLAS::BLAS
     Parlay::parlay)
 
+# MinGW GCC emits duplicate Parlay TLS initializers across translation units.
+if(MINGW AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set_target_properties(ann PROPERTIES UNITY_BUILD ON UNITY_BUILD_MODE GROUP)
+    set_source_files_properties(kmeans.cc ivf.cc PROPERTIES UNITY_GROUP parlay)
+endif()
+
 # Stage the local UCRT64 DLLs next to ann.exe.
 if(WIN32 AND ANN_RUNTIME_DIR)
     file(COPY

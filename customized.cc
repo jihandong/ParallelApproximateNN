@@ -17,6 +17,7 @@ IVFImpl make_customized_impl(const std::vector<float>& database,
     (void)k;
 
     const auto trained_centroids = std::make_shared<std::vector<float>>();
+    const auto ivf = std::make_shared<std::vector<std::vector<std::size_t>>>();
     return {
         .train = [&database, dimension, nlist, trained_centroids] {
             const auto sample = customized::sample_rows(database, dimension, nlist);
@@ -25,13 +26,15 @@ IVFImpl make_customized_impl(const std::vector<float>& database,
 #if DEBUG_MODE
             std::clog << "Sampled " << sample.size() / dimension
                 << " rows for K-means training.\n"
-                << "Initialized " << centroids.size() / dimension
+                << "Initialized " << nlist
                 << " centroids.\n";
 #endif
             *trained_centroids = std::move(centroids);
         },
-        // TODO: Build the inverted lists from the database and trained_centroids.
-        .add = customized::build_ivf_index,
+        .add = [&database, dimension, nlist, trained_centroids, ivf] {
+            *ivf = customized::build_ivf(database,
+                *trained_centroids, dimension, nlist);
+        },
         // TODO: Search the built index and write IDs into the result buffer.
         .search = customized::search_ivf
     };

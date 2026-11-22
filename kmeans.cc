@@ -78,13 +78,7 @@ std::vector<float> init_centroids(const std::vector<float>& sample,
                 double sum = 0.0;
                 for (std::size_t i = begin; i < end; ++i) {
                     const auto* point = sample.data() + i * dimension;
-                    // XXX: Benchmark SIMD or batched kernels for squared L2.
-                    double distance = 0.0;
-                    for (std::size_t j = 0; j < dimension; ++j) {
-                        const double diff =
-                            static_cast<double>(point[j]) - centroid[j];
-                        distance += diff * diff;
-                    }
+                    const auto distance = squared_l2(point, centroid, dimension);
                     weights[i] = std::min(weights[i], distance);
                     sum += weights[i];
                 }
@@ -194,13 +188,7 @@ void lloyd(const std::vector<float>& sample, std::size_t dimension,
                     double best_dist = std::numeric_limits<double>::infinity();
                     for (std::size_t j = 0; j < nlist; ++j) {
                         const auto* centroid = centroids.data() + j * dimension;
-                        double distance = 0.0;
-                        // XXX: SIMD or Math API
-                        for (std::size_t k = 0; k < dimension; ++k) {
-                            const double diff =
-                                static_cast<double>(point[k]) - centroid[k];
-                            distance += diff * diff;
-                        }
+                        const auto distance = squared_l2(point, centroid, dimension);
                         if (distance < best_dist) {
                             nearest = j;
                             best_dist = distance;
