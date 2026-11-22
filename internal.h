@@ -45,7 +45,11 @@ void lloyd(const std::vector<float>& sample, std::size_t dimension,
 std::vector<std::vector<std::size_t>> build_ivf(
     const std::vector<float>& database, const std::vector<float>& centroids,
     std::size_t dimension, std::size_t nlist);
-void search_ivf();
+void search_ivf(const std::vector<float>& database,
+    const std::vector<float>& queries, const std::vector<float>& centroids,
+    const std::vector<std::vector<std::size_t>>& ivf, std::size_t dimension,
+    std::size_t nlist, std::size_t nprobe, std::size_t k,
+    std::vector<std::int64_t>& neighbors);
 
 }  // namespace customized
 

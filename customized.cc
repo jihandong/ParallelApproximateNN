@@ -11,11 +11,6 @@ IVFImpl make_customized_impl(const std::vector<float>& database,
     const std::vector<float>& queries, std::vector<std::int64_t>& neighbors,
     std::size_t dimension, std::size_t nlist, std::size_t nprobe,
     std::size_t k) {
-    (void)queries;
-    (void)neighbors;
-    (void)nprobe;
-    (void)k;
-
     const auto trained_centroids = std::make_shared<std::vector<float>>();
     const auto ivf = std::make_shared<std::vector<std::vector<std::size_t>>>();
     return {
@@ -35,7 +30,10 @@ IVFImpl make_customized_impl(const std::vector<float>& database,
             *ivf = customized::build_ivf(database,
                 *trained_centroids, dimension, nlist);
         },
-        // TODO: Search the built index and write IDs into the result buffer.
-        .search = customized::search_ivf
+        .search = [&database, &queries, &neighbors, dimension, nlist, nprobe, k,
+                       trained_centroids, ivf] {
+            customized::search_ivf(database, queries, *trained_centroids, *ivf,
+                dimension, nlist, nprobe, k, neighbors);
+        }
     };
 }
