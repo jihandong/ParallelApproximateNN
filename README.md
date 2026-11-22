@@ -17,7 +17,3 @@ Final Project of Parallel Programming Algorithm, NYU Graduate Course
     2. test multi thread on remote machine
 5. result visualization
 6. (optional) optimization
-
-## TODO
-- potential optimization: use unordered_set/bitset instead of vector selected mask
-- potential optimization: manual L2 distance or math func
