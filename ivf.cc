@@ -122,8 +122,9 @@ void search_ivf(const std::vector<float>& database,
         probe_times.begin(), probe_times.end(), Clock::duration{});
     const auto scan_time = std::accumulate(
         scan_times.begin(), scan_times.end(), Clock::duration{});
-    std::printf("IVF Search profiling: probe=%.6f, scan=%.6f\n",
-        Millis(probe_time).count(), Millis(scan_time).count());
+    std::printf("IVF Search profiling (ms/query): probe=%.6f, scan=%.6f\n",
+        Millis(probe_time).count() / nb_queries,
+        Millis(scan_time).count() / nb_queries);
 #endif
 }
 
