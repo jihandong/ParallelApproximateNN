@@ -12,10 +12,10 @@
 IVFImpl make_faiss_impl(const std::vector<float>& database,
     const std::vector<float>& queries, std::vector<std::int64_t>& neighbors,
     std::size_t dimension, std::size_t nlist, std::size_t nprobe,
-    std::size_t k) {
-    // Limit both Faiss's OpenMP work and its BLAS calls to one thread.
-    omp_set_num_threads(1);
-    openblas_set_num_threads(1);
+    std::size_t k, int threads) {
+    omp_set_dynamic(0);
+    omp_set_num_threads(threads);
+    openblas_set_num_threads(threads);
 
     const auto database_rows = database.size() / dimension;
     const auto query_rows = queries.size() / dimension;

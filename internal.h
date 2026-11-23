@@ -16,11 +16,11 @@ struct IVFImpl {
 IVFImpl make_faiss_impl(const std::vector<float>& database,
     const std::vector<float>& queries, std::vector<std::int64_t>& neighbors,
     std::size_t dimension, std::size_t nlist, std::size_t nprobe,
-    std::size_t k);
+    std::size_t k, int threads);
 IVFImpl make_customized_impl(const std::vector<float>& database,
     const std::vector<float>& queries, std::vector<std::int64_t>& neighbors,
     std::size_t dimension, std::size_t nlist, std::size_t nprobe,
-    std::size_t k);
+    std::size_t k, int threads);
 
 namespace customized {
 

@@ -1,6 +1,9 @@
 #include "internal.h"
 
+#include <cstdlib>
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <utility>
 
 #if DEBUG_MODE
@@ -10,7 +13,17 @@
 IVFImpl make_customized_impl(const std::vector<float>& database,
     const std::vector<float>& queries, std::vector<std::int64_t>& neighbors,
     std::size_t dimension, std::size_t nlist, std::size_t nprobe,
-    std::size_t k) {
+    std::size_t k, int threads) {
+    // Set the worker count before Parlay creates its scheduler.
+    const auto value = std::to_string(threads);
+#ifdef _WIN32
+    const auto status = _putenv_s("PARLAY_NUM_THREADS", value.c_str());
+#else
+    const auto status = setenv("PARLAY_NUM_THREADS", value.c_str(), 1);
+#endif
+    if (status != 0) {
+        throw std::runtime_error("Could not set PARLAY_NUM_THREADS");
+    }
     const auto trained_centroids = std::make_shared<std::vector<float>>();
     const auto ivf = std::make_shared<std::vector<std::vector<std::size_t>>>();
     return {

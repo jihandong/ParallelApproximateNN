@@ -30,6 +30,7 @@ struct Params {
     std::string_view implementation = "faiss";
     std::size_t nlist = 256;
     std::size_t nprobe = 8;
+    int threads = 1;
 };
 
 std::size_t positive_integer(std::string_view value, std::string_view option) {
@@ -58,6 +59,12 @@ Params parse_params(int argc, char** argv) {
             params.nlist = positive_integer(value, option);
         } else if (option == "--nprobe") {
             params.nprobe = positive_integer(value, option);
+        } else if (option == "--threads") {
+            const auto threads = positive_integer(value, option);
+            if (!std::in_range<int>(threads)) {
+                throw std::runtime_error("Thread count is too large for --threads");
+            }
+            params.threads = static_cast<int>(threads);
         } else {
             throw std::runtime_error("Unknown option: " + std::string(option));
         }
@@ -137,7 +144,7 @@ double check_results(const fs::path& reference_path,
 int main(int argc, char** argv) {
     if (argc < 2) {
         std::cerr << "Usage: ann <dataset directory> [--impl faiss|customized]"
-            " [--nlist 256] [--nprobe 8]\n";
+            " [--nlist 256] [--nprobe 8] [--threads 1]\n";
         return 2;
     }
 
@@ -185,7 +192,7 @@ int main(int argc, char** argv) {
         const auto make_impl =
             use_customized ? make_customized_impl : make_faiss_impl;
         const auto impl = make_impl(db, queries, neighbors, dimension,
-            params.nlist, params.nprobe, top_k);
+            params.nlist, params.nprobe, top_k, params.threads);
         using Clock = std::chrono::steady_clock;
         using Seconds = std::chrono::duration<double>;
         const auto train_start = Clock::now();
