@@ -2,14 +2,42 @@ cmake_minimum_required(VERSION 3.20)
 project(ParallelApproximateNN LANGUAGES CXX)
 
 find_package(OpenMP REQUIRED COMPONENTS CXX)
-find_package(faiss CONFIG REQUIRED)
-find_package(Parlay CONFIG REQUIRED)
 
 # The baseline calls OpenBLAS directly to set its thread count.
 set(BLA_VENDOR OpenBLAS)
 find_package(BLAS REQUIRED)
 find_path(OPENBLAS_INCLUDE_DIR NAMES openblas_config.h
     PATH_SUFFIXES openblas openblas-pthread openblas-openmp REQUIRED)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    include(FetchContent)
+
+    find_package(faiss CONFIG QUIET)
+    if(NOT TARGET faiss)
+        set(FAISS_ENABLE_GPU OFF)
+        set(FAISS_ENABLE_PYTHON OFF)
+        set(FAISS_ENABLE_MKL OFF)
+        set(FAISS_ENABLE_EXTRAS OFF)
+        set(BUILD_TESTING OFF)
+        FetchContent_Declare(faiss
+            GIT_REPOSITORY https://github.com/facebookresearch/faiss.git
+            GIT_TAG v1.14.0
+            GIT_SHALLOW TRUE)
+        FetchContent_MakeAvailable(faiss)
+    endif()
+
+    find_package(Parlay CONFIG QUIET)
+    if(NOT TARGET Parlay::parlay)
+        FetchContent_Declare(parlaylib
+            GIT_REPOSITORY https://github.com/cmuparlay/parlaylib.git
+            GIT_TAG 51017699dcc421f80479cdb238d3092233ad0d26)
+        FetchContent_MakeAvailable(parlaylib)
+        add_library(Parlay::parlay ALIAS parlay)
+    endif()
+else()
+    find_package(faiss CONFIG REQUIRED)
+    find_package(Parlay CONFIG REQUIRED)
+endif()
 
 add_executable(ann main.cc faiss.cc customized.cc kmeans.cc ivf.cc)
 target_compile_features(ann PRIVATE cxx_std_20)
