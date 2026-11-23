@@ -15,5 +15,5 @@ Final Project of Parallel Programming Algorithm, NYU Graduate Course
 5. test
     1. test single thread on local machine till pass
     2. test multi thread on remote machine
-5. result visualization
+5. (optional) result visualization
 6. (optional) optimization
