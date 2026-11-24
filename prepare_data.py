@@ -5,7 +5,7 @@ import shutil
 import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 import h5py
 import numpy as np
@@ -33,7 +33,8 @@ def get_source(directory, url, size):
     print(f"Downloading {directory.name} ({size / 2**20:.0f} MiB)...", flush=True)
     with TemporaryDirectory(dir=directory) as work_dir:
         partial = Path(work_dir) / path.name
-        with urlopen(url, timeout=60) as response, partial.open("wb") as target:
+        request = Request(url, headers={"User-Agent": "ParallelApproximateNN"})
+        with urlopen(request, timeout=60) as response, partial.open("wb") as target:
             shutil.copyfileobj(response, target, length=2**20)
         if partial.stat().st_size != size or not h5py.is_hdf5(partial):
             raise ValueError(f"{directory.name}: download has an unexpected size or format")
